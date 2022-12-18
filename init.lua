@@ -62,6 +62,11 @@ require('packer').startup(function(use)
     require('toggleterm').setup()
   end}
 
+  use({
+    "aserowy/tmux.nvim",
+    config = function() require("tmux").setup() end
+  })
+
   -- Add custom plugins to packer from ~/.config/nvim/lua/custom/plugins.lua
   local has_plugins, plugins = pcall(require, 'custom.plugins')
     if has_plugins then
@@ -436,6 +441,10 @@ cmp.setup {
 
 local function set_keymap(...) vim.api.nvim_set_keymap(...) end
 local opts = { noremap = true, silent = true }
+
+set_keymap('n', '<C-f>', '<cmd>lua require("telescope.builtin").find_files()<cr>', opts)
+set_keymap('n', '<leader>of', '<cmd>lua require("telescope.builtin").oldfiles()<cr>', opts)
+set_keymap('n', '<leader>re', '<cmd>lua require("telescope.builtin").registers()<cr>', opts)
 
 set_keymap('n', '<leader>tf',    '<cmd>ToggleTerm direction=float<cr>', opts)
 set_keymap('n', '<leader>tt',    '<cmd>ToggleTermToggleAll<cr>', opts)
