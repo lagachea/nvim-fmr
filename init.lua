@@ -442,7 +442,12 @@ cmp.setup {
 local function set_keymap(...) vim.api.nvim_set_keymap(...) end
 local opts = { noremap = true, silent = true }
 
+-- le Man, sinon t'es un genie --
+set_keymap('n', '<leader>man', '<cmd>lua require("telescope.builtin").man_pages()<cr>', opts)
+set_keymap('n', '<leader>mans', '<cmd>lua require("telescope.builtin").man_pages({sections={"ALL"}})<cr>', opts)
+
 set_keymap('n', '<C-f>', '<cmd>lua require("telescope.builtin").find_files()<cr>', opts)
+set_keymap('n', '<leader>cb', '<cmd>lua require("telescope.builtin").current_buffer_fuzzy_find()<cr>', opts)
 set_keymap('n', '<leader>of', '<cmd>lua require("telescope.builtin").oldfiles()<cr>', opts)
 set_keymap('n', '<leader>re', '<cmd>lua require("telescope.builtin").registers()<cr>', opts)
 
