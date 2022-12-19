@@ -3,14 +3,15 @@ RED = "\\033[31m"
 WHITE = "\\033[0m"
 GREEN = "\\033[32m"
 PURPLE = "\\033[35m"
-YELLOW = "\x1B[33m"
-KBLU =  "\x1B[34m"
+YELLOW = "\\033[33m"
+KBLU =  "\\033[34m"
 
 LNECLR = "\\33[2K\\r"
 
 all : run
 
 bakup :
+	touch .bakup
 	[ -d ~/.local/share/nvim ] && mv ~/.local/share/nvim ~/.local/share/nvim.bak || printf "$(LNECLR)\n$(YELLOW) No local plugin installed. $(WHITE)\n\n"
 	[ -L ~/.config/nvim ] && mv ~/.config/nvim ~/.config/nvim.bak || printf "$(LNECLR)\n$(YELLOW) No local configuration installed. $(WHITE)\n\n"
 	
@@ -26,12 +27,10 @@ install : bakup
 	./nvim-linux64/bin/nvim
 
 clean :
-	[ -d nvim-linux64 ] && rm -rf nvim-linux64 
-	# || printf "$(LNECLR)\n$(YELLOW) No local neovim to clean. $(WHITE)\n\n"
-	[ -d ~/.local/share/nvim.bak ] && rm -rf ~/.local/share/nvim
-	# || printf "$(LNECLR)\n$(YELLOW) No local plugin installed] $(WHITE)\n\n"
-	[ -L ~/.config/nvim.bak ] && rm -rf ~/.config/nvim
-	# || printf "$(LNECLR)\n$(YELLOW) No local plugin installed] $(WHITE)\n\n"
+	rm -rf nvim-linux64
+	[ -f ./.bakup ] && rm -rf ~/.local/share/nvim
+	[ -f ./.bakup ] && rm -rf ~/.config/nvim
+	rm -rf .bakup
 	printf "$(LNECLR)\n$(GREEN)[ $(PURPLE)make clean $(GREEN)] was a success$(WHITE)\n\n"
 
 restore : clean
