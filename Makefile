@@ -11,7 +11,7 @@ LNECLR = "\\33[2K\\r"
 all : run
 
 bakup :
-	touch .bakup
+
 	[ -d ~/.local/share/nvim ] && mv ~/.local/share/nvim ~/.local/share/nvim.bak || printf "$(LNECLR)\n$(YELLOW) No local plugin installed. $(WHITE)\n\n"
 	[ -L ~/.config/nvim ] && mv ~/.config/nvim ~/.config/nvim.bak || printf "$(LNECLR)\n$(YELLOW) No local configuration installed. $(WHITE)\n\n"
 	
@@ -28,9 +28,9 @@ install : bakup
 
 clean :
 	rm -rf nvim-linux64
-	[ -f ./.bakup ] && rm -rf ~/.local/share/nvim
-	[ -f ./.bakup ] && rm -rf ~/.config/nvim
-	rm -rf .bakup
+	[ -f ./.bakup ] && rm -rf ~/.local/share/nvim || printf "$(LNECLR)\n$(YELLOW) No local plugin to clean. $(WHITE)\n\n"
+	[ -f ./.bakup ] && rm -rf ~/.config/nvim || printf "$(LNECLR)\n$(YELLOW) No local configuration to clean. $(WHITE)\n\n"
+	rm -rf .bakup || printf "$(LNECLR)\n$(YELLOW) No bakup. $(WHITE)\n\n"
 	printf "$(LNECLR)\n$(GREEN)[ $(PURPLE)make clean $(GREEN)] was a success$(WHITE)\n\n"
 
 restore : clean
