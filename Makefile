@@ -14,7 +14,7 @@ bakup :
 	touch .bakup
 	[ -d ~/.local/share/nvim ] && mv ~/.local/share/nvim ~/.local/share/nvim.bak || printf "$(LNECLR)\n$(YELLOW) No local plugin installed. $(WHITE)\n\n"
 	[ -L ~/.config/nvim ] && mv ~/.config/nvim ~/.config/nvim.bak || printf "$(LNECLR)\n$(YELLOW) No local configuration installed. $(WHITE)\n\n"
-	
+
 run :
 	[ -f ./nvim-linux64/bin/nvim ] && ./nvim-linux64/bin/nvim && printf "$(LNECLR)$(RED)\nDon't forget to [ $(PURPLE)make restore$(RED) ] when you are finish !$(WHITE)\n\n" || printf "$(LNECLR)\nYou need to run [ $(PURPLE)make install$(WHITE) ]\n\n"
 

@@ -1,6 +1,7 @@
 -- Install packer
 local install_path = vim.fn.stdpath 'data' .. '/site/pack/packer/start/packer.nvim'
 local is_bootstrap = false
+
 if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
     is_bootstrap = true
     vim.fn.execute('!git clone https://github.com/wbthomason/packer.nvim ' .. install_path)
@@ -25,7 +26,7 @@ require('packer').startup(function(use)
 
     use { -- Autocompletion
         'hrsh7th/nvim-cmp',
-        requires = { 'hrsh7th/cmp-nvim-lsp', 'L3MON4D3/LuaSnip', 'saadparwaiz1/cmp_luasnip' },
+        requires = { 'hrsh7th/cmp-nvim-lsp', 'L3MON4D3/LuaSnip', 'saadparwaiz1/cmp_luasnip'},
     }
 
     use { -- Highlight, edit, and navigate code
@@ -41,37 +42,35 @@ require('packer').startup(function(use)
     }
 
     -- Git related plugins
-    use 'tpope/vim-fugitive'
-    use 'tpope/vim-rhubarb'
     use 'lewis6991/gitsigns.nvim'
 
     use 'navarasu/onedark.nvim' -- Theme inspired by Atom
     use 'nvim-lualine/lualine.nvim' -- Fancier statusline
     use 'lukas-reineke/indent-blankline.nvim' -- Add indentation guides even on blank lines
     use 'numToStr/Comment.nvim' -- "gc" to comment visual regions/lines
-    use 'tpope/vim-sleuth' -- Detect tabstop and shiftwidth automatically
 
     -- Fuzzy Finder (files, lsp, etc)
     use { 'nvim-telescope/telescope.nvim', branch = '0.1.x', requires = { 'nvim-lua/plenary.nvim' } }
 
-    -- Fuzzy Finder Algorithm which requires local dependencies to be built. Only load if `make` is available
-  use { 'nvim-telescope/telescope-fzf-native.nvim', run = 'make', cond = vim.fn.executable 'make' == 1 }
+    use { -- Fuzzy Finder Algorithme
+        "nvim-telescope/telescope-fzy-native.nvim",
+    }
 
-  use { -- Terminal neovim
-    'akinsho/toggleterm.nvim', tag = '*', config = function()
-    require('toggleterm').setup()
-  end}
+    use { -- Terminal neovim
+      'akinsho/toggleterm.nvim', tag = '*', config = function()
+      require('toggleterm').setup()
+    end}
 
-  use({
-    "aserowy/tmux.nvim",
-    config = function() require("tmux").setup() end
-  })
+    use ({ -- need tmux keybinds
+      "aserowy/tmux.nvim",
+      config = function() require("tmux").setup() end
+    })
 
   -- Add custom plugins to packer from ~/.config/nvim/lua/custom/plugins.lua
-  local has_plugins, plugins = pcall(require, 'custom.plugins')
-    if has_plugins then
-        plugins(use)
-    end
+    local has_plugins, plugins = pcall(require, 'custom.plugins')
+      if has_plugins then
+          plugins(use)
+      end
 
     if is_bootstrap then
         require('packer').sync()
@@ -99,6 +98,14 @@ vim.api.nvim_create_autocmd('BufWritePost', {
     pattern = vim.fn.expand '$MYVIMRC',
 })
 
+-- Lua
+require('onedark').setup {
+    style = 'warmer',
+    code_style = {
+        comments = 'none',
+    },
+}
+
 -- [[ Setting options ]]
 -- See `:help vim.o`
 
@@ -113,6 +120,9 @@ vim.o.mouse = 'a'
 
 -- Enable break indent
 vim.o.breakindent = true
+
+-- relative number
+vim.o.relativenumber = true
 
 -- Save undo history
 vim.o.undofile = true
@@ -175,7 +185,7 @@ require('Comment').setup()
 -- Enable `lukas-reineke/indent-blankline.nvim`
 -- See `:help indent_blankline.txt`
 require('indent_blankline').setup {
-    char = '┊',
+    char = '|',
     show_trailing_blankline_indent = false,
 }
 
@@ -195,6 +205,34 @@ require('gitsigns').setup {
 -- See `:help telescope` and `:help telescope.setup()`
 require('telescope').setup {
     defaults = {
+        prompt_prefix = "> ",
+        selection_strategy = "reset",
+        scroll_strategy ="cycle",
+        sorting_strategy = "ascending",
+        layout_strategy = "horizontal",
+        layout_config = {
+            horizontal = {
+                mirror = false,
+                prompt_position = "top",
+                results_height = 1,
+                preview_width = 0.50,
+                width = {padding = 0},
+                height ={ padding = 0},
+                preview_cutoff = 120,
+                prompt_title = false,
+                results_title = false,
+                preview_title = false,
+                path_display = true,
+            },
+            vertical = {
+                mirror = false,
+                width = {padding = 0},
+            },
+        },
+
+        file_sorter =  require'telescope.sorters'.get_fzy_sorter,
+        generic_sorter =  require'telescope.sorters'.get_fzy_sorter,
+
         mappings = {
             i = {
                 ['<C-u>'] = false,
@@ -202,15 +240,23 @@ require('telescope').setup {
             },
         },
     },
+
+    extensions = {
+        fzy_native = {
+            override_generic_sorter = true,
+            override_file_sorter = true,
+        },
+    }
+
 }
 
--- Enable telescope fzf native, if installed
-pcall(require('telescope').load_extension, 'fzf')
+-- Enable telescope fzy native
+require('telescope').load_extension('fzy_native')
 
 -- See `:help telescope.builtin`
-vim.keymap.set('n', '<leader>?', require('telescope.builtin').oldfiles, { desc = '[?] Find recently opened files' })
+vim.keymap.set('n', '<leader>of', require('telescope.builtin').oldfiles, { desc = '[?] Find recently opened files' })
 vim.keymap.set('n', '<leader><space>', require('telescope.builtin').buffers, { desc = '[ ] Find existing buffers' })
-vim.keymap.set('n', '<leader>/', function()
+vim.keymap.set('n', '<leader>cb', function()
     -- You can pass additional configuration to telescope to change theme, layout, etc.
     require('telescope.builtin').current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
         winblend = 10,
@@ -218,7 +264,7 @@ vim.keymap.set('n', '<leader>/', function()
     })
 end, { desc = '[/] Fuzzily search in current buffer]' })
 
-vim.keymap.set('n', '<leader>sf', require('telescope.builtin').find_files, { desc = '[S]earch [F]iles' })
+vim.keymap.set('n', '<C-f>', require('telescope.builtin').find_files, { desc = '[S]earch [F]iles' })
 vim.keymap.set('n', '<leader>sh', require('telescope.builtin').help_tags, { desc = '[S]earch [H]elp' })
 vim.keymap.set('n', '<leader>sw', require('telescope.builtin').grep_string, { desc = '[S]earch current [W]ord' })
 vim.keymap.set('n', '<leader>sg', require('telescope.builtin').live_grep, { desc = '[S]earch by [G]rep' })
@@ -228,7 +274,7 @@ vim.keymap.set('n', '<leader>sd', require('telescope.builtin').diagnostics, { de
 -- See `:help nvim-treesitter`
 require('nvim-treesitter.configs').setup {
     -- Add languages to be installed here that you want installed for treesitter
-    ensure_installed = { 'c', 'cpp', 'go', 'lua', 'python', 'rust', 'typescript', 'help' },
+    ensure_installed = { 'c', 'cpp', 'lua', 'python', 'rust', 'help' },
 
     highlight = { enable = true },
     indent = { enable = true },
@@ -307,14 +353,14 @@ local on_attach = function(_, bufnr)
             desc = 'LSP: ' .. desc
         end
 
-vim.keymap.set('n', keys, func, { buffer = bufnr, desc = desc })
+    vim.keymap.set('n', keys, func, { buffer = bufnr, desc = desc })
     end
 
-nmap('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
-nmap('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
+    nmap('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
+    nmap('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
 
     nmap('gd', vim.lsp.buf.definition, '[G]oto [D]efinition')
-nmap('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
+    nmap('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
     nmap('gI', vim.lsp.buf.implementation, '[G]oto [I]mplementation')
     nmap('<leader>D', vim.lsp.buf.type_definition, 'Type [D]efinition')
     nmap('<leader>ds', require('telescope.builtin').lsp_document_symbols, '[D]ocument [S]ymbols')
@@ -322,24 +368,24 @@ nmap('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
 
     -- See `:help K` for why this keymap
     nmap('K', vim.lsp.buf.hover, 'Hover Documentation')
-nmap('<C-k>', vim.lsp.buf.signature_help, 'Signature Documentation')
+    nmap('<C-k>', vim.lsp.buf.signature_help, 'Signature Documentation')
 
     -- Lesser used LSP functionality
-nmap('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
+    nmap('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
     nmap('<leader>wa', vim.lsp.buf.add_workspace_folder, '[W]orkspace [A]dd Folder')
     nmap('<leader>wr', vim.lsp.buf.remove_workspace_folder, '[W]orkspace [R]emove Folder')
-nmap('<leader>wl', function()
+    nmap('<leader>wl', function()
         print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-end, '[W]orkspace [L]ist Folders')
+    end, '[W]orkspace [L]ist Folders')
 
     -- Create a command `:Format` local to the LSP buffer
     vim.api.nvim_buf_create_user_command(bufnr, 'Format', function(_)
-        if vim.lsp.buf.format then
-            vim.lsp.buf.format()
-elseif vim.lsp.buf.formatting then
-vim.lsp.buf.formatting()
-        end
-end, { desc = 'Format current buffer with LSP' })
+            if vim.lsp.buf.format then
+                vim.lsp.buf.format()
+    elseif vim.lsp.buf.formatting then
+    vim.lsp.buf.formatting()
+            end
+    end, { desc = 'Format current buffer with LSP' })
 end
 
 -- Setup mason so it can manage external tooling
@@ -347,7 +393,7 @@ require('mason').setup()
 
 -- Enable the following language servers
 -- Feel free to add/remove any LSPs that you want here. They will automatically be installed
-local servers = { 'clangd', 'rust_analyzer', 'pyright', 'tsserver', 'sumneko_lua', 'gopls' }
+local servers = { 'clangd', 'rust_analyzer', 'pyright', 'sumneko_lua', }
 
 -- Ensure the servers above are installed
 require('mason-lspconfig').setup {
@@ -446,11 +492,9 @@ local opts = { noremap = true, silent = true }
 set_keymap('n', '<leader>man', '<cmd>lua require("telescope.builtin").man_pages()<cr>', opts)
 set_keymap('n', '<leader>mans', '<cmd>lua require("telescope.builtin").man_pages({sections={"ALL"}})<cr>', opts)
 
-set_keymap('n', '<C-f>', '<cmd>lua require("telescope.builtin").find_files()<cr>', opts)
-set_keymap('n', '<leader>cb', '<cmd>lua require("telescope.builtin").current_buffer_fuzzy_find()<cr>', opts)
-set_keymap('n', '<leader>of', '<cmd>lua require("telescope.builtin").oldfiles()<cr>', opts)
 set_keymap('n', '<leader>re', '<cmd>lua require("telescope.builtin").registers()<cr>', opts)
 
+-- Terminal
 set_keymap('n', '<leader>tf',    '<cmd>ToggleTerm direction=float<cr>', opts)
 set_keymap('n', '<leader>tt',    '<cmd>ToggleTermToggleAll<cr>', opts)
 set_keymap('n', '<leader>thc',    '<cmd>ToggleTermSendCurrentLine<cr>', opts)
@@ -462,7 +506,6 @@ set_keymap('t', '<C-j>',        '<cmd>wincmd j<CR>', opts)
 set_keymap('t', '<C-k>',        '<cmd>wincmd k<CR>', opts)
 set_keymap('t', '<C-l>',        '<cmd>wincmd l<CR>', opts)
 set_keymap('t', '<Esc>',        '<C-\\><C-n>', opts)
-set_keymap('t', 'jk',        '<C-\\><C-n>', opts)
 
 
 -- The line beneath this is called `modeline`. See `:help modeline`
