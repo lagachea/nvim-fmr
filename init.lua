@@ -237,15 +237,15 @@ require('telescope').setup {
 require('telescope').load_extension('fzy_native')
 
 -- See `:help telescope.builtin`
-vim.keymap.set('n', '<leader>of', require('telescope.builtin').oldfiles, { desc = '[?] Find recently opened files' })
+vim.keymap.set('n', '<leader>so', require('telescope.builtin').oldfiles, { desc = '[?] Find recently opened files' })
 vim.keymap.set('n', '<leader><space>', require('telescope.builtin').buffers, { desc = '[ ] Find existing buffers' })
-vim.keymap.set('n', '<leader>cb', require('telescope.builtin').current_buffer_fuzzy_find, { desc = '[/] Fuzzily search in current buffer]' })
+vim.keymap.set('n', '<leader>sb', require('telescope.builtin').current_buffer_fuzzy_find, { desc = '[/] Fuzzily search in current buffer]' })
 vim.keymap.set('n', '<leader>re', require("telescope.builtin").registers)
 
 vim.keymap.set('n', '<C-f>', require('telescope.builtin').find_files, { desc = '[S]earch [F]iles' })
 vim.keymap.set('n', '<leader>sh', require('telescope.builtin').help_tags, { desc = '[S]earch [H]elp' })
 vim.keymap.set('n', '<leader>sw', require('telescope.builtin').grep_string, { desc = '[S]earch current [W]ord' })
-vim.keymap.set('n', '<leader>sg', require('telescope.builtin').live_grep, { desc = '[S]earch by [G]rep' })
+vim.keymap.set('n', '<leader>sl', require('telescope.builtin').live_grep, { desc = '[S]earch by [G]rep' })
 vim.keymap.set('n', '<leader>sd', require('telescope.builtin').diagnostics, { desc = '[S]earch [D]iagnostics' })
 
 -- [[ Configure Treesitter ]]
@@ -464,8 +464,7 @@ cmp.setup {
 }
 
 -- le Man, sinon t'es un genie --
-vim.keymap.set('n', '<leader>man', require("telescope.builtin").man_pages)
-vim.keymap.set('n', '<leader>mans', '<cmd>lua require("telescope.builtin").man_pages({sections={"ALL"}})<cr>')
+vim.keymap.set('n', '<leader>man', '<cmd>lua require("telescope.builtin").man_pages({sections={"ALL"}})<cr>')
 
 -- Terminal
 vim.keymap.set('n', '<leader>tf',    '<cmd>ToggleTerm direction=float<cr>')
