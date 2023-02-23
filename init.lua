@@ -45,6 +45,8 @@ require('packer').startup(function(use)
   use 'lewis6991/gitsigns.nvim'
 
   use 'navarasu/onedark.nvim' -- Theme inspired by Atom
+  use "rebelot/kanagawa.nvim"
+  use 'AlexvZyl/nordic.nvim'
   use 'nvim-lualine/lualine.nvim' -- Fancier statusline
   use 'lukas-reineke/indent-blankline.nvim' -- Add indentation guides even on blank lines
   use 'numToStr/Comment.nvim' -- "gc" to comment visual regions/lines
@@ -60,6 +62,17 @@ require('packer').startup(function(use)
     'akinsho/toggleterm.nvim', tag = '*', config = function()
       require('toggleterm').setup()
     end}
+
+  use {
+  "folke/which-key.nvim",
+  config = function()
+    require("which-key").setup {
+      -- your configuration comes here
+      -- or leave it empty to use the default settings
+      -- refer to the configuration section below
+    }
+  end
+}
 
   use ({ -- need tmux keybinds
     "aserowy/tmux.nvim",
@@ -106,6 +119,19 @@ require('onedark').setup {
   },
 }
 
+require('kanagawa').setup({
+    commentStyle = { italic = false },
+    globalStatus = true,       -- adjust window separators highlight for laststatus=3
+    dimInactive = true,
+    theme = "light"           -- Load "default" theme or the experimental "light" theme
+})
+
+require('nordic').setup {
+    telescope = {
+    -- Available styles: `classic`, `flat`.
+    style = 'classic'
+  }
+}
 -- [[ Setting options ]]
 -- See `:help vim.o`
 
@@ -137,7 +163,10 @@ vim.wo.signcolumn = 'yes'
 
 -- Set colorscheme
 vim.o.termguicolors = true
+
+vim.cmd("colorscheme nordic")
 vim.cmd [[colorscheme onedark]]
+vim.cmd("colorscheme kanagawa")
 
 -- Set completeopt to have a better completion experience
 vim.o.completeopt = 'menuone,noselect'
@@ -162,7 +191,7 @@ vim.keymap.set('n', 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = tr
 require('lualine').setup {
   options = {
     icons_enabled = false,
-    theme = 'onedark',
+    theme = 'auto',
     component_separators = '|',
     section_separators = '',
   },

@@ -18,6 +18,13 @@ bakup :
 run :
 	[ -f ./nvim-linux64/bin/nvim ] && ./nvim-linux64/bin/nvim && printf "$(LNECLR)$(RED)\nDon't forget to [ $(PURPLE)make restore$(RED) ] when you are finish !$(WHITE)\n\n" || printf "$(LNECLR)\nYou need to run [ $(PURPLE)make install$(WHITE) ]\n\n"
 
+lazy : bakup
+	./neovim.sh
+	git clone https://github.com/LazyVim/starter ~/.config/nvim
+	printf "$(LNECLR)\n$(GREEN)[ $(PURPLE)make install $(GREEN)] was a success$(WHITE)\n\n"
+	printf "$(LNECLR)\nYou can now run [ $(PURPLE)make$(WHITE) ]\n\n           or [ $(PURPLE)make run$(WHITE) ]\n\n"
+	[ -f ./nvim-linux64/bin/nvim ] && ./nvim-linux64/bin/nvim && printf "$(LNECLR)$(RED)\nDon't forget to [ $(PURPLE)make restore$(RED) ] when you are finish !$(WHITE)\n\n" || printf "$(LNECLR)\nYou need to run [ $(PURPLE)make install$(WHITE) ]\n\n"
+
 install : bakup
 	./neovim.sh
 	mkdir -p ~/.config/nvim
